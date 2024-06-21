@@ -2,7 +2,7 @@ name: Daily News Fetch
 
 on:
   schedule:
-    - cron: '00 07 * * *'
+    - cron: '00 18 * * *'
 
 
 permissions:
