@@ -1,10 +1,12 @@
 import httpx
 import json
 import pandas as pd
+from datetime import datetime
 
-# User inputs
-start_date = 20240621  # Replace with your start date (YYYYMMDD)
-end_date = 20240621  # Replace with your end date (YYYYMMDD)
+today = datetime.today().strftime('%Y%m%d')
+
+start_date = today
+end_date = today
 
 # Load your DataFrame with the list of countries
 df_countries = pd.read_csv("countries.csv")
