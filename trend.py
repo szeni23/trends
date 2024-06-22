@@ -5,8 +5,11 @@ from datetime import datetime
 
 today = datetime.today().strftime('%Y%m%d')
 
-start_date = today
-end_date = today
+start_date_str = today 
+end_date_str = today 
+
+start_date = datetime.strptime(start_date_str, '%Y%m%d')
+end_date = datetime.strptime(end_date_str, '%Y%m%d')
 
 # Load your DataFrame with the list of countries
 df_countries = pd.read_csv("countries.csv")
