@@ -18,24 +18,26 @@ df = df.dropna(subset=['Traffic volume'])
 if df['name'].isnull().any():
     st.warning("Some Geo Locations could not be mapped to country names.")
 
+# Create HTML info strings
 df['Info'] = df.apply(lambda row: f"<a href='{row['Link']}'>{row['Title']}</a><br>Traffic volume: {row['Traffic volume']}", axis=1)
 df_info = df.groupby('name')['Info'].apply('<br>'.join).reset_index()
 
+# Streamlit app
 st.title('Google Trends News Visualization')
 
-# Create a Plotly choropleth map with mobile-friendly settings
+# Create optimized choropleth map
 fig = px.choropleth(
     df_info,
     locations="name",
     locationmode="country names",
     hover_name="name",
     hover_data={"Info": True},
-    projection="equirectangular",  # More mobile-friendly projection
+    projection="equirectangular",
     title="Trending News Topics by Country",
     color_continuous_scale=px.colors.sequential.Viridis
 )
 
-# Customize the map for better mobile interaction
+# Mobile-optimized geosettings
 fig.update_geos(
     showcoastlines=True,
     coastlinecolor="SlateGray",
@@ -43,14 +45,14 @@ fig.update_geos(
     landcolor="MintCream",
     showocean=True,
     oceancolor="LightSkyBlue",
-    fitbounds="locations",  # Auto-zoom to data points
-    visible=False  # Simplify map rendering
+    fitbounds="locations",
+    visible=False
 )
 
-# Mobile-optimized layout
+# Responsive layout configuration
 fig.update_layout(
-    dragmode=False,  # Disable map dragging
-    autosize=True,  # Allow responsive sizing
+    dragmode=False,
+    autosize=True,
     margin={"r": 0, "t": 50, "l": 0, "b": 0},
     geo=dict(
         bgcolor='rgba(0,0,0,0)',
@@ -61,11 +63,7 @@ fig.update_layout(
     title=dict(
         text="Trending News Topics by Country",
         font=dict(size=24)
-    )
-)
-
-# Disable zoom and other interactions that might interfere with scrolling
-fig.update_layout(
+    ),
     config={
         'scrollZoom': False,
         'displayModeBar': False
@@ -75,16 +73,12 @@ fig.update_layout(
 # Display the map with responsive container
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-# Group by 'Title' and sum the 'Traffic volume'
+# Top trending topics visualization
 df_trending = df.groupby('Title')['Traffic volume'].sum().reset_index()
-
-# Sort the data by 'Traffic volume' in descending order
 df_trending = df_trending.sort_values(by='Traffic volume', ascending=False)
-
-# Select the top 10 trending topics
 top_trending = df_trending.head(10)
 
-# Create a Plotly bar chart for the top trending topics
+# Mobile-friendly bar chart
 fig_trending = px.bar(
     top_trending,
     x='Traffic volume',
@@ -96,14 +90,26 @@ fig_trending = px.bar(
     color_continuous_scale=px.colors.sequential.Plasma
 )
 
-# Customize the bar chart
+# Responsive bar chart layout
 fig_trending.update_layout(
-    autosize=False,
-    width=1000,
-    height=600,
+    autosize=True,
     margin={"r": 0, "t": 50, "l": 0, "b": 0},
-    yaxis=dict(categoryorder='total ascending')
+    yaxis=dict(categoryorder='total ascending'),
+    xaxis=dict(tickformat=",d")
 )
 
 # Display the bar chart
-st.plotly_chart(fig_trending)
+st.plotly_chart(fig_trending, use_container_width=True)
+
+# Optional: Add mobile-friendly expanders for additional info
+with st.expander("ℹ️ Mobile Usage Tips"):
+    st.markdown("""
+    - **Tap** country names to see details
+    - **Scroll vertically** to see both visualizations
+    - **Rotate screen** for better landscape viewing
+    - **Click links** in popups to visit news sources
+    """)
+
+# Add a loading spinner for initial data load
+with st.spinner('Loading complete!'):
+    pass
