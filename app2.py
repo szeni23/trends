@@ -63,43 +63,17 @@ fig.update_layout(
     title=dict(
         text="Trending News Topics by Country",
         font=dict(size=24)
-    ),
-    config={
-        'scrollZoom': False,
-        'displayModeBar': False
-    }
+    )
 )
+
+# Set config separately (FIXED PART)
+fig.config.update({
+    'scrollZoom': False,
+    'displayModeBar': False
+})
 
 # Display the map with responsive container
-st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
-
-# Top trending topics visualization
-df_trending = df.groupby('Title')['Traffic volume'].sum().reset_index()
-df_trending = df_trending.sort_values(by='Traffic volume', ascending=False)
-top_trending = df_trending.head(10)
-
-# Mobile-friendly bar chart
-fig_trending = px.bar(
-    top_trending,
-    x='Traffic volume',
-    y='Title',
-    orientation='h',
-    title='Top 10 Trending News Topics by Traffic Volume',
-    labels={'Traffic volume': 'Traffic Volume', 'Title': 'News Title'},
-    color='Traffic volume',
-    color_continuous_scale=px.colors.sequential.Plasma
-)
-
-# Responsive bar chart layout
-fig_trending.update_layout(
-    autosize=True,
-    margin={"r": 0, "t": 50, "l": 0, "b": 0},
-    yaxis=dict(categoryorder='total ascending'),
-    xaxis=dict(tickformat=",d")
-)
-
-# Display the bar chart
-st.plotly_chart(fig_trending, use_container_width=True)
+st.plotly_chart(fig, use_container_width=True)
 
 # Optional: Add mobile-friendly expanders for additional info
 with st.expander("ℹ️ Mobile Usage Tips"):
