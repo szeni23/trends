@@ -23,19 +23,19 @@ df_info = df.groupby('name')['Info'].apply('<br>'.join).reset_index()
 
 st.title('Google Trends News Visualization')
 
-# Create a Plotly choropleth map
+# Create a Plotly choropleth map with mobile-friendly settings
 fig = px.choropleth(
     df_info,
     locations="name",
     locationmode="country names",
     hover_name="name",
     hover_data={"Info": True},
-    projection="orthographic",  # <<== Changed from "natural earth" to "orthographic"
+    projection="equirectangular",  # More mobile-friendly projection
     title="Trending News Topics by Country",
     color_continuous_scale=px.colors.sequential.Viridis
 )
 
-# Customize the map
+# Customize the map for better mobile interaction
 fig.update_geos(
     showcoastlines=True,
     coastlinecolor="SlateGray",
@@ -43,17 +43,14 @@ fig.update_geos(
     landcolor="MintCream",
     showocean=True,
     oceancolor="LightSkyBlue",
-    showlakes=True,
-    lakecolor="LightBlue",
-    showrivers=True,
-    rivercolor="Aqua"
+    fitbounds="locations",  # Auto-zoom to data points
+    visible=False  # Simplify map rendering
 )
 
-# Update layout for better aesthetics
+# Mobile-optimized layout
 fig.update_layout(
-    autosize=False,
-    width=1100,  # Consider making this responsive for mobile
-    height=750,  # Same for height
+    dragmode=False,  # Disable map dragging
+    autosize=True,  # Allow responsive sizing
     margin={"r": 0, "t": 50, "l": 0, "b": 0},
     geo=dict(
         bgcolor='rgba(0,0,0,0)',
@@ -67,11 +64,16 @@ fig.update_layout(
     )
 )
 
-# Update hover template to display Info
-fig.update_traces(hovertemplate='%{customdata[0]}')
+# Disable zoom and other interactions that might interfere with scrolling
+fig.update_layout(
+    config={
+        'scrollZoom': False,
+        'displayModeBar': False
+    }
+)
 
-# Display the map
-st.plotly_chart(fig)
+# Display the map with responsive container
+st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
 # Group by 'Title' and sum the 'Traffic volume'
 df_trending = df.groupby('Title')['Traffic volume'].sum().reset_index()
